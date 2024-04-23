@@ -7,11 +7,12 @@ import { PrimeReactProvider } from "primereact/api";
 import "primereact/resources/primereact.css";
 import "../styles/demo/Demos.scss";
 import "../styles/layout/layout.scss";
+import { QueryClient, QueryClientProvider } from "react-query";
 
 interface RootLayoutProps {
     children: React.ReactNode;
 }
-
+const queryClient = new QueryClient();
 export default function RootLayout({ children }: RootLayoutProps) {
     return (
         <html lang="en" suppressHydrationWarning>
@@ -23,9 +24,11 @@ export default function RootLayout({ children }: RootLayoutProps) {
                 ></link>
             </head>
             <body>
-                <PrimeReactProvider>
-                    <LayoutProvider>{children}</LayoutProvider>
-                </PrimeReactProvider>
+                <QueryClientProvider client={queryClient}>
+                    <PrimeReactProvider>
+                        <LayoutProvider>{children}</LayoutProvider>
+                    </PrimeReactProvider>
+                </QueryClientProvider>
             </body>
         </html>
     );

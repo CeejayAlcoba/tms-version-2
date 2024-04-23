@@ -4,17 +4,49 @@ import { useRouter } from "next/navigation";
 import { Button } from "primereact/button";
 import { Checkbox } from "primereact/checkbox";
 import { InputText } from "primereact/inputtext";
-import { useContext, useState } from "react";
+import { ChangeEvent, useContext, useRef, useState } from "react";
 import { LayoutContext } from "../../../../layout/context/layoutcontext";
+import axios, { AxiosError } from "axios";
+import { Toast } from "primereact/toast";
 
+type UserCredential = {
+    username: string;
+    password: string;
+};
 const Login: Page = () => {
+    const toast = useRef<Toast>(null);
     const [rememberMe, setRememberMe] = useState(false);
+    const [credential, setCredential] = useState<UserCredential>({
+        username: "",
+        password: "",
+    });
     const router = useRouter();
     const { layoutConfig } = useContext(LayoutContext);
     const dark = layoutConfig.colorScheme !== "light";
+    const onInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setCredential((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    };
 
+    const onLogin = async () => {
+        try {
+            const { data } = await axios.post("/api/account/login", credential);
+            localStorage.setItem("token", data);
+            router.push("/");
+        } catch (error: any) {
+            showError(error?.response.data.error);
+        }
+    };
+    const showError = (message: string) => {
+        toast.current?.show({
+            severity: "error",
+            summary: "Error",
+            detail: "An error occurred",
+            life: 3000,
+        });
+    };
     return (
         <>
+            <Toast ref={toast} />
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 1600 800"
@@ -57,10 +89,12 @@ const Login: Page = () => {
                         <span className="p-input-icon-left w-full mb-4">
                             <i className="pi pi-envelope"></i>
                             <InputText
-                                id="email"
+                                id="username"
                                 type="text"
+                                name="username"
                                 className="w-full md:w-25rem"
-                                placeholder="Email"
+                                placeholder="Username"
+                                onChange={onInputChange}
                             />
                         </span>
                         <span className="p-input-icon-left w-full mb-4">
@@ -68,8 +102,10 @@ const Login: Page = () => {
                             <InputText
                                 id="password"
                                 type="password"
+                                name="password"
                                 className="w-full md:w-25rem"
                                 placeholder="Password"
+                                onChange={onInputChange}
                             />
                         </span>
                         <div className="mb-4 flex flex-wrap gap-3">
@@ -96,7 +132,7 @@ const Login: Page = () => {
                         <Button
                             label="Log In"
                             className="w-full"
-                            onClick={() => router.push("/")}
+                            onClick={onLogin}
                         ></Button>
                     </div>
                 </div>

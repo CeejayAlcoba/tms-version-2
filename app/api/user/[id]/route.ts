@@ -7,4 +7,8 @@ export const GET = async (req: NextResponse, context: any) => {
     const { id } = params;
     const users = await getUserById(parseInt(id));
     return NextResponse.json(users);
+    return NextResponse.json(
+        { error: "Internal Server Error" },
+        { status: 500 }
+    );
 };

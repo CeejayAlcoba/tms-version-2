@@ -1,5 +1,5 @@
+import { db } from "@/shared/db";
 import { User } from "@prisma/client";
-import { db } from "../../../lib/db";
 import { hash } from "bcrypt";
 
 export const getAllUsers = async () => {

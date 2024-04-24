@@ -1,7 +1,7 @@
-import { generateToken } from "@/lib/jwt";
+
 import { User } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
-import { createUser, getAllUsers } from "./handler";
+import { createUser, getAllUsers, getUserByUsername } from "./handler";
 
 export const GET = async (req: NextRequest) => {
     const users = await getAllUsers();
@@ -11,10 +11,15 @@ export const GET = async (req: NextRequest) => {
 export const POST = async (req: NextRequest) => {
     try {
         const body: User = await req.json();
-        const newUser = await createUser(body);
+        const userExist = await getUserByUsername(body.username);
 
-        const jwt = generateToken(newUser);
-        return NextResponse.json(jwt);
+        if (userExist)
+            return NextResponse.json(
+                { error: "Username already existed" },
+                { status: 500 }
+            );
+        const newUser = await createUser(body);
+        return NextResponse.json(newUser);
     } catch (ex) {
         return NextResponse.json(ex);
     }

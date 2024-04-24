@@ -12,3 +12,10 @@ export const GET = async (req: NextResponse, context: any) => {
         { status: 500 }
     );
 };
+
+// export const POST = async (req: NextResponse, context: any) => {
+//     const { params } = context;
+//     const { id } = params;
+//     const { username, email, password } = await req.json();
+//     return NextResponse.json({ username, email, password });
+// };

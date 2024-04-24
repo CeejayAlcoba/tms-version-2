@@ -6,8 +6,8 @@ import { Checkbox } from "primereact/checkbox";
 import { InputText } from "primereact/inputtext";
 import { ChangeEvent, useContext, useRef, useState } from "react";
 import { LayoutContext } from "../../../../layout/context/layoutcontext";
-import axios, { AxiosError } from "axios";
 import { Toast } from "primereact/toast";
+import axios from "axios";
 
 type UserCredential = {
     username: string;
@@ -40,13 +40,14 @@ const Login: Page = () => {
         toast.current?.show({
             severity: "error",
             summary: "Error",
-            detail: "An error occurred",
+            detail: message,
             life: 3000,
         });
     };
     return (
         <>
             <Toast ref={toast} />
+
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 1600 800"
@@ -133,6 +134,9 @@ const Login: Page = () => {
                             label="Log In"
                             className="w-full"
                             onClick={onLogin}
+                            disabled={
+                                !credential.password || !credential.username
+                            }
                         ></Button>
                     </div>
                 </div>

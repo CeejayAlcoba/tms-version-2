@@ -7,7 +7,7 @@ import { InputText } from "primereact/inputtext";
 import React, { useEffect, useRef, useState } from "react";
 import { UserPublic } from "@/types/user";
 import axios from "axios";
-import { useQueries } from "react-query";
+import { FilterMatchMode, FilterOperator } from "primereact/api";
 
 function List() {
     const [users, setUsers] = useState<UserPublic[]>([]);
@@ -16,7 +16,6 @@ function List() {
     const [globalFilterValue, setGlobalFilterValue] = useState("");
     const router = useRouter();
     const dt = useRef(null);
-
     const fetchUsers = async () => {
         setLoading(true);
         const { data } = await axios.get("/api/user");
@@ -25,14 +24,41 @@ function List() {
         setLoading(false);
         return users;
     };
-    
 
     useEffect(() => {
         fetchUsers();
+        initFilters();
         return () => {
             setUsers([]);
         };
     }, []);
+
+    const initFilters = () => {
+        setFilters({
+            global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+            name: {
+                operator: FilterOperator.AND,
+                constraints: [
+                    { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+                ],
+            },
+            "country.name": {
+                operator: FilterOperator.AND,
+                constraints: [
+                    { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+                ],
+            },
+            representative: { value: null, matchMode: FilterMatchMode.IN },
+            date: {
+                operator: FilterOperator.AND,
+                constraints: [
+                    { value: null, matchMode: FilterMatchMode.DATE_IS },
+                ],
+            },
+            activity: { value: null, matchMode: FilterMatchMode.BETWEEN },
+        });
+        setGlobalFilterValue("");
+    };
 
     const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target;
@@ -50,7 +76,7 @@ function List() {
                     <InputText
                         value={globalFilterValue}
                         onChange={onGlobalFilterChange}
-                        placeholder="Global Search"
+                        placeholder="Search"
                         className="w-full"
                     />
                 </span>
@@ -82,14 +108,6 @@ function List() {
                 filters={filters}
                 loading={loading}
             >
-                <Column
-                    field="id"
-                    header="ID"
-                    sortable
-                    // body={dateBodyTemplate}
-                    headerClassName="white-space-nowrap"
-                    style={{ width: "25%" }}
-                ></Column>
                 <Column
                     field="username"
                     header="Username"

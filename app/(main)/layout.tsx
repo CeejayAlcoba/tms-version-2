@@ -1,5 +1,9 @@
+"use client";
 import { Metadata } from "next";
 import Layout from "../../layout/layout";
+import withAuth from "@/shared/withAuth";
+import "primeflex/primeflex.css";
+import "primeicons/primeicons.css";
 
 interface MainLayoutProps {
     children: React.ReactNode;
@@ -25,6 +29,8 @@ export const metadata: Metadata = {
     },
 };
 
-export default function MainLayout({ children }: MainLayoutProps) {
+function MainLayout({ children }: MainLayoutProps) {
     return <Layout>{children}</Layout>;
 }
+
+export default withAuth(MainLayout);

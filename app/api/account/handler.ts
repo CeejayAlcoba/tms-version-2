@@ -1,7 +1,7 @@
 import { compare } from "bcrypt";
 import { use } from "react";
-import { generateToken } from "../../../lib/jwt";
 import { getUserByUsername } from "../user/handler";
+import { generateToken } from "@/shared/jwt";
 
 export const accountLogin = async ({
     username,
@@ -11,7 +11,7 @@ export const accountLogin = async ({
     password: string;
 }) => {
     const user = await getUserByUsername(username);
-    console.log(user)
+    console.log(user);
     if (!user) {
         return null;
     }
@@ -19,7 +19,7 @@ export const accountLogin = async ({
     if (!isValidPassword) return null;
 
     const { password: userPassword, ...rest } = user;
-    const token = generateToken(user);
-   
+    const token = generateToken(rest);
+
     return token;
 };
